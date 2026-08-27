@@ -1,9 +1,11 @@
 # Runtime dependencies only. This is the file the Vercel build installs.
 #
 # Vercel resolves Python dependencies from the repository root rather than from the
-# configured root directory, so frontend/requirements.txt and frontend/.python-version
-# were both ignored and the build kept selecting CPython 3.14 - for which onnxruntime
-# ships no wheel. The interpreter is pinned in .python-version beside this file.
+# configured root directory, so frontend/requirements.txt was never being read. It
+# also chooses its own interpreter - CPython 3.14 at the time of writing - and
+# ignored .python-version in both locations. onnxruntime is therefore pinned to a
+# release that ships cp314 wheels (1.24.3 and later do) instead of trying to force
+# the interpreter back down.
 #
 # Keeping the training stack out of here matters for more than tidiness: torch alone
 # would put the serverless function far past Vercel's 250 MB limit.
@@ -11,6 +13,6 @@
 # For the full development environment - training, evaluation, figures, tests - use:
 #     pip install -r requirements-dev.txt
 
-onnxruntime==1.20.1
+onnxruntime==1.28.0
 numpy==2.2.4
 pillow==11.1.0

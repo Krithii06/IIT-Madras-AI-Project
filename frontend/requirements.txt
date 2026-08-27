@@ -1,12 +1,12 @@
-# Runtime dependencies for the Vercel serverless functions in api/.
-# Deliberately the same pins as backend/requirements.txt minus the web framework:
-# Vercel provides the HTTP layer, so FastAPI and uvicorn are not needed here.
+# Runtime dependencies for the serverless functions in api/.
 #
-# Measured install: ~78 MB of site-packages against Vercel's 250 MB function limit.
+# Vercel reads the requirements.txt at the repository root, not this one, so this
+# file is here for anyone running the functions locally and to keep the frontend
+# directory self-describing. Keep the pins identical to the root file - a mismatch
+# would mean local behaviour diverging from deployed behaviour.
 #
-# The interpreter is pinned in .python-version next to this file. Without it Vercel
-# picked CPython 3.14, which has no onnxruntime wheel (1.20.1 publishes cp310-cp313)
-# and the build failed at dependency resolution. Bump both together.
-onnxruntime==1.20.1
+# onnxruntime must stay at 1.24.3 or later: earlier releases publish no cp314 wheel
+# and Vercel selects CPython 3.14 regardless of .python-version.
+onnxruntime==1.28.0
 numpy==2.2.4
 pillow==11.1.0

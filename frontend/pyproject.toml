@@ -1,20 +1,22 @@
-# Dependency and interpreter declaration for the Vercel serverless functions.
+# Dependency declaration for the Vercel serverless functions in api/.
 #
-# requirements.txt alone was not enough: Vercel resolves dependencies with uv, and
-# with only a .python-version file present it still selected CPython 3.14, for which
-# onnxruntime publishes no wheel. requires-python here constrains the interpreter uv
-# picks, which is the part that actually needed fixing.
+# requires-python is deliberately open-ended. An earlier attempt pinned it to
+# ">=3.12,<3.13" to stop Vercel selecting CPython 3.14, which onnxruntime 1.20.1 had
+# no wheel for. That fight was the wrong one: Vercel ignored the constraint anyway,
+# and onnxruntime has shipped cp314 wheels since 1.24.3. Bumping the dependency
+# solved it, and a narrow pin here would now reject the interpreter Vercel actually
+# uses.
 #
-# Keep the pins identical to requirements.txt - both are read depending on how the
-# build is invoked.
+# Keep these pins identical to requirements.txt - which file the build reads depends
+# on how it is invoked, and disagreeing pins would be worse than repeating them.
 
 [project]
 name = "plant-disease-api"
 version = "1.0.0"
 description = "Serverless inference endpoints for the plant disease classifier"
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.12"
 dependencies = [
-    "onnxruntime==1.20.1",
+    "onnxruntime==1.28.0",
     "numpy==2.2.4",
     "pillow==11.1.0",
 ]

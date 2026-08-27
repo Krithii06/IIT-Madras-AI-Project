@@ -23,7 +23,7 @@ tqdm==4.67.3
 
 # Export and inference. onnxruntime is also a runtime dependency of the backend.
 onnx==1.22.0
-onnxruntime==1.20.1
+onnxruntime==1.28.0
 
 # API, needed here so the tests can exercise the backend in-process.
 fastapi==0.139.0
