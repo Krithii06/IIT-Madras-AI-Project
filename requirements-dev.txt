@@ -1,0 +1,35 @@
+# Full development environment: dataset preparation, training, evaluation, export
+# and the test suite. The deployed API installs backend/requirements.txt instead,
+# which is a much smaller subset (no torch, no torchvision, no matplotlib).
+#
+# Versions are the ones this project was actually developed and measured on.
+# Install with:  pip install -r requirements.txt
+
+# Training stack. The CPU wheels are pinned on purpose - the whole project is
+# built and benchmarked without a GPU, and the CUDA builds are ~2 GB.
+torch==2.12.0
+torchvision==0.27.0
+
+# Dataset download. Only the hub client is needed; the `datasets` library is not
+# used because the project reads the archive and the official split files directly.
+huggingface_hub==1.18.0
+
+numpy==2.2.4
+pillow==11.1.0
+scikit-learn==1.9.0
+pandas==2.2.3
+matplotlib==3.10.9
+tqdm==4.67.3
+
+# Export and inference. onnxruntime is also a runtime dependency of the backend.
+onnx==1.22.0
+onnxruntime==1.20.1
+
+# API, needed here so the tests can exercise the backend in-process.
+fastapi==0.139.0
+uvicorn[standard]==0.50.2
+python-multipart==0.0.32
+pydantic==2.13.4
+
+pytest==9.1.1
+httpx==0.28.1

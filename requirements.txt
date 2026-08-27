@@ -1,35 +1,16 @@
-# Full development environment: dataset preparation, training, evaluation, export
-# and the test suite. The deployed API installs backend/requirements.txt instead,
-# which is a much smaller subset (no torch, no torchvision, no matplotlib).
+# Runtime dependencies only. This is the file the Vercel build installs.
 #
-# Versions are the ones this project was actually developed and measured on.
-# Install with:  pip install -r requirements.txt
+# Vercel resolves Python dependencies from the repository root rather than from the
+# configured root directory, so frontend/requirements.txt and frontend/.python-version
+# were both ignored and the build kept selecting CPython 3.14 - for which onnxruntime
+# ships no wheel. The interpreter is pinned in .python-version beside this file.
+#
+# Keeping the training stack out of here matters for more than tidiness: torch alone
+# would put the serverless function far past Vercel's 250 MB limit.
+#
+# For the full development environment - training, evaluation, figures, tests - use:
+#     pip install -r requirements-dev.txt
 
-# Training stack. The CPU wheels are pinned on purpose - the whole project is
-# built and benchmarked without a GPU, and the CUDA builds are ~2 GB.
-torch==2.12.0
-torchvision==0.27.0
-
-# Dataset download. Only the hub client is needed; the `datasets` library is not
-# used because the project reads the archive and the official split files directly.
-huggingface_hub==1.18.0
-
+onnxruntime==1.20.1
 numpy==2.2.4
 pillow==11.1.0
-scikit-learn==1.9.0
-pandas==2.2.3
-matplotlib==3.10.9
-tqdm==4.67.3
-
-# Export and inference. onnxruntime is also a runtime dependency of the backend.
-onnx==1.22.0
-onnxruntime==1.20.1
-
-# API, needed here so the tests can exercise the backend in-process.
-fastapi==0.139.0
-uvicorn[standard]==0.50.2
-python-multipart==0.0.32
-pydantic==2.13.4
-
-pytest==9.1.1
-httpx==0.28.1

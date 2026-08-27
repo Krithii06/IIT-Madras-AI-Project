@@ -250,8 +250,13 @@ Requires Python 3.11+ and Node 18+.
 ```bash
 git clone <repo-url>
 cd plant-disease-classification
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
+
+`requirements-dev.txt` is the full environment: training, evaluation, figures and
+tests. The `requirements.txt` beside it holds only the three runtime packages the
+deployed serverless function installs — Vercel resolves Python dependencies from the
+repository root, so that file has to stay small or `torch` ends up in the function.
 
 ### 1. Build the dataset
 
