@@ -1,6 +1,13 @@
-// The deployed backend URL is injected at build time. Falls back to the local
-// uvicorn port so `npm run dev` works with no configuration.
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
+// Where the API lives, in order of preference:
+//   1. VITE_API_URL, if the backend is hosted separately (the Render setup).
+//   2. Same origin in a production build - the Vercel deployment answers /predict
+//      itself through the rewrites in vercel.json, so no cross-origin call and no
+//      CORS configuration at all.
+//   3. The local uvicorn port during `npm run dev`.
+const configured = import.meta.env.VITE_API_URL
+const API_BASE = configured
+  ? configured.replace(/\/$/, '')
+  : (import.meta.env.DEV ? 'http://localhost:8000' : '')
 
 // The free hosting tier stops the backend after 15 minutes without traffic and
 // takes roughly a minute to start it again. That is longer than fetch's default

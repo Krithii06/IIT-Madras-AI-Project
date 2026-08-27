@@ -1,0 +1,8 @@
+# Runtime dependencies for the Vercel serverless functions in api/.
+# Deliberately the same pins as backend/requirements.txt minus the web framework:
+# Vercel provides the HTTP layer, so FastAPI and uvicorn are not needed here.
+#
+# Measured install: ~78 MB of site-packages against Vercel's 250 MB function limit.
+onnxruntime==1.20.1
+numpy==2.2.4
+pillow==11.1.0

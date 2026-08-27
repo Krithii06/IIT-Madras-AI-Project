@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/health", "destination": "/api/health" },
+    { "source": "/model-info", "destination": "/api/model-info" },
+    { "source": "/predict", "destination": "/api/predict" }
+  ],
+  "functions": {
+    "api/predict.py": { "maxDuration": 30 }
+  }
+}
