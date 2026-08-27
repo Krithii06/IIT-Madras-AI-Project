@@ -3,6 +3,10 @@
 # Vercel provides the HTTP layer, so FastAPI and uvicorn are not needed here.
 #
 # Measured install: ~78 MB of site-packages against Vercel's 250 MB function limit.
+#
+# The interpreter is pinned in .python-version next to this file. Without it Vercel
+# picked CPython 3.14, which has no onnxruntime wheel (1.20.1 publishes cp310-cp313)
+# and the build failed at dependency resolution. Bump both together.
 onnxruntime==1.20.1
 numpy==2.2.4
 pillow==11.1.0

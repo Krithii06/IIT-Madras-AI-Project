@@ -61,6 +61,22 @@ def test_runtime_requirements_carry_no_training_dependencies():
         assert needed in requirements
 
 
+def test_python_version_is_pinned_to_one_onnxruntime_ships_wheels_for():
+    """Vercel picked 3.14 unpinned, which has no onnxruntime wheel, and the build died.
+
+    onnxruntime 1.20.1 publishes cp310 through cp313, so the pin has to stay inside
+    that range until the dependency is upgraded.
+    """
+    pin_file = config.PROJECT_ROOT / "frontend" / ".python-version"
+    assert pin_file.exists(), "frontend/.python-version is missing; Vercel will guess"
+
+    major, minor = (int(part) for part in pin_file.read_text().strip().split(".")[:2])
+    assert major == 3 and 10 <= minor <= 13, (
+        f"python {major}.{minor} is pinned but onnxruntime 1.20.1 only ships "
+        f"cp310-cp313 wheels"
+    )
+
+
 def test_vercel_config_rewrites_the_documented_paths():
     import json
 
