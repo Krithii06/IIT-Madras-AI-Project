@@ -1,0 +1,9 @@
+{
+  "arch": "mobilenet_v2",
+  "source_run": "mobilenet_leaf",
+  "onnx_size_mb": 9.1,
+  "torch_checkpoint_mb": 9.15,
+  "max_logit_diff": 1.430511474609375e-06,
+  "single_image_cpu_ms": 5.6,
+  "image_size": 160
+}

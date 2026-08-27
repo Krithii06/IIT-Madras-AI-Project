@@ -1,0 +1,4 @@
+rel_path,source_class,true_label,predicted_label,confidence,leaf_id
+Apple___Apple_scab/c190660f-6116-465c-8ca6-fc56f9844a30___FREC_Scab 3432.JPG,Apple___Apple_scab,diseased,healthy,0.994,Apple___Apple_scab:::94.0
+Apple___Apple_scab/f18c0441-917e-4f34-b26e-a1a71d0adec2___FREC_Scab 3429.JPG,Apple___Apple_scab,diseased,healthy,0.9918,Apple___Apple_scab:::94.0
+Apple___Apple_scab/cbc265da-87e2-449e-8585-b744f9371772___FREC_Scab 3431.JPG,Apple___Apple_scab,diseased,healthy,0.9845,Apple___Apple_scab:::94.0

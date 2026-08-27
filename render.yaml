@@ -1,0 +1,20 @@
+# Render blueprint for the inference API.
+#
+# The Docker build context is the repository root, not backend/, because the image
+# needs src/inference and models/export alongside the API code.
+#
+# ALLOWED_ORIGINS is deliberately not set here. It holds the deployed frontend URL,
+# which is not known until the frontend is deployed, so it is entered in the Render
+# dashboard instead of being committed. Until it is set the API falls back to
+# localhost origins and the deployed frontend will be blocked by CORS.
+services:
+  - name: plant-disease-api
+    type: web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ALLOWED_ORIGINS
+        sync: false

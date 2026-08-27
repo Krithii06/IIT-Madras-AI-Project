@@ -1,0 +1,23 @@
+{
+  "efficientnet_b0": {
+    "run": "efficientnet_leaf",
+    "params_millions": 4.01,
+    "onnx_mb": 16.6,
+    "cpu_ms": 23.7,
+    "train_minutes": 49.3
+  },
+  "mobilenet_v2": {
+    "run": "mobilenet_leaf",
+    "params_millions": 2.23,
+    "onnx_mb": 9.1,
+    "cpu_ms": 10.7,
+    "train_minutes": 18.6
+  },
+  "resnet18": {
+    "run": "resnet18_leaf",
+    "params_millions": 11.18,
+    "onnx_mb": 44.78,
+    "cpu_ms": 40.1,
+    "train_minutes": 18.8
+  }
+}

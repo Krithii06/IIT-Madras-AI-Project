@@ -1,0 +1,7 @@
+rel_path,source_class,true_label,predicted_label,confidence,leaf_id
+Apple___healthy/d6daf7ae-43ab-4a27-a881-8b716d6c55a1___RS_HL 5845.JPG,Apple___healthy,healthy,diseased,0.9927,Apple___healthy:::34.0
+Apple___healthy/0e99efe9-d414-4091-b7b4-6ba6856db3d9___RS_HL 5841.JPG,Apple___healthy,healthy,diseased,0.9888,Apple___healthy:::34.0
+Apple___Apple_scab/cbc265da-87e2-449e-8585-b744f9371772___FREC_Scab 3431.JPG,Apple___Apple_scab,diseased,healthy,0.9396,Apple___Apple_scab:::94.0
+Apple___healthy/9d3bb139-5177-4d08-914b-5fe232cff065___RS_HL 6011.JPG,Apple___healthy,healthy,diseased,0.8883,Apple___healthy:::62.0
+Apple___healthy/264deb35-dd16-459c-bbd5-4991f6b21be3___RS_HL 5842.JPG,Apple___healthy,healthy,diseased,0.8652,Apple___healthy:::34.0
+Apple___healthy/37715958-a2d4-41d6-9672-9cafd0f1c146___RS_HL 7502.JPG,Apple___healthy,healthy,diseased,0.6372,Apple___healthy:::163.0

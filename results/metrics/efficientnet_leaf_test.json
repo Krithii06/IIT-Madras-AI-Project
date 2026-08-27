@@ -1,0 +1,78 @@
+{
+  "run_name": "efficientnet_leaf",
+  "arch": "efficientnet_b0",
+  "split": "test",
+  "split_strategy": "leaf",
+  "images": 611,
+  "leaves": 97,
+  "accuracy": 0.9918,
+  "macro_f1": 0.9918,
+  "weighted_f1": 0.9918,
+  "positive_class": "diseased",
+  "precision_positive": 1.0,
+  "recall_positive": 0.9846,
+  "f1_positive": 0.9922,
+  "per_class": {
+    "healthy": {
+      "precision": 0.9828,
+      "recall": 1.0,
+      "f1": 0.9913,
+      "support": 286
+    },
+    "diseased": {
+      "precision": 1.0,
+      "recall": 0.9846,
+      "f1": 0.9922,
+      "support": 325
+    }
+  },
+  "confusion_matrix": [
+    [
+      286,
+      0
+    ],
+    [
+      5,
+      320
+    ]
+  ],
+  "confusion_matrix_labels": [
+    "healthy",
+    "diseased"
+  ],
+  "confidence": {
+    "mean_when_correct": 0.991,
+    "mean_when_wrong": 0.8479,
+    "share_below_0.70": 0.0082
+  },
+  "per_source_class": {
+    "Apple___Apple_scab": {
+      "images": 127,
+      "correct": 123,
+      "recall": 0.9685,
+      "mean_confidence": 0.9782,
+      "expected_binary_label": "diseased"
+    },
+    "Apple___Black_rot": {
+      "images": 146,
+      "correct": 145,
+      "recall": 0.9932,
+      "mean_confidence": 0.9851,
+      "expected_binary_label": "diseased"
+    },
+    "Apple___Cedar_apple_rust": {
+      "images": 52,
+      "correct": 52,
+      "recall": 1.0,
+      "mean_confidence": 0.9963,
+      "expected_binary_label": "diseased"
+    },
+    "Apple___healthy": {
+      "images": 286,
+      "correct": 286,
+      "recall": 1.0,
+      "mean_confidence": 0.9961,
+      "expected_binary_label": "healthy"
+    }
+  }
+}

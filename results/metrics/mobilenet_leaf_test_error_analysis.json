@@ -1,0 +1,22 @@
+{
+  "run_name": "mobilenet_leaf",
+  "split": "test",
+  "images": 611,
+  "leaves": 97,
+  "image_errors": 3,
+  "image_accuracy": 0.9951,
+  "leaves_with_at_least_one_error": 1,
+  "leaf_level_accuracy": 0.9897,
+  "distinct_leaves_among_errors": 1,
+  "errors_per_error_leaf": {
+    "Apple___Apple_scab:::94.0": 3
+  },
+  "errors_by_source_class": {
+    "Apple___Apple_scab": 3
+  },
+  "confidence_threshold": 0.7,
+  "errors_below_threshold": 0,
+  "errors_above_threshold": 3,
+  "mean_confidence_when_wrong": 0.9901,
+  "max_confidence_when_wrong": 0.994
+}

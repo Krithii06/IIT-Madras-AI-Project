@@ -1,0 +1,18 @@
+{
+  "arch": "mobilenet_v2",
+  "image_size": 160,
+  "resize_before_crop": 182,
+  "normalize_mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "normalize_std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "confidence_threshold": 0.7,
+  "intra_op_threads": 1,
+  "source_run": "mobilenet_leaf"
+}

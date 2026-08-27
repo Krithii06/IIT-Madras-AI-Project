@@ -1,0 +1,378 @@
+:root {
+  --text: #1c1e21;
+  --text-muted: #5f6672;
+  --border: #dcdfe4;
+  --surface: #ffffff;
+  --background: #f6f7f8;
+  --accent: #2f6f43;
+  --accent-hover: #275c38;
+  --healthy: #2f6f43;
+  --diseased: #a8442a;
+  --warning-bg: #fdf6e3;
+  --warning-border: #e6d6a8;
+  --radius: 6px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+}
+
+.site-header h1 {
+  font-size: 22px;
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.site-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 14px;
+}
+
+.dropzone {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #fbfbfc;
+}
+
+.dropzone:hover,
+.dropzone.is-active {
+  border-color: var(--accent);
+  background: #f4f8f5;
+}
+
+.dropzone p {
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+
+.dropzone .hint {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.preview {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.preview img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.preview-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  min-width: 180px;
+}
+
+.preview-meta strong {
+  display: block;
+  color: var(--text);
+  font-weight: 500;
+  word-break: break-all;
+  margin-bottom: 2px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+button {
+  font: inherit;
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+}
+
+button:hover:not(:disabled) {
+  border-color: #c3c8d0;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.result-label {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 2px;
+  text-transform: capitalize;
+}
+
+.result-label.healthy {
+  color: var(--healthy);
+}
+
+.result-label.diseased {
+  color: var(--diseased);
+}
+
+.result-message {
+  margin: 8px 0 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.confidence-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.confidence-row .name {
+  width: 82px;
+  text-transform: capitalize;
+}
+
+.confidence-row .value {
+  width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.bar {
+  flex: 1;
+  height: 6px;
+  background: #eceef1;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.notice {
+  border: 1px solid var(--warning-border);
+  background: var(--warning-bg);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.error {
+  border: 1px solid #e6c4c4;
+  background: #fdf3f3;
+  color: #8a3232;
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px 20px;
+  font-size: 13px;
+}
+
+.info-grid dt {
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.info-grid dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.steps {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13.5px;
+}
+
+.steps li {
+  margin-bottom: 6px;
+}
+
+.note {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.subhead {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+
+.stack-list {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 8px 16px;
+  margin: 0;
+  font-size: 13px;
+}
+
+.stack-list > div {
+  display: contents;
+}
+
+.stack-list dt {
+  color: var(--text-muted);
+}
+
+.stack-list dd {
+  margin: 0;
+}
+
+.technique-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.technique-list li {
+  margin-bottom: 7px;
+}
+
+.technique-list strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.author-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.author-role {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.author-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.author-links a {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 14px;
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--text);
+  background: #fff;
+}
+
+.author-links a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.disclaimer {
+  font-size: 13px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.disclaimer p {
+  margin: 0 0 6px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .preview img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Two columns of 150px plus text is unreadable on a phone; stack the label
+     above its value instead. */
+  .stack-list {
+    grid-template-columns: 1fr;
+    gap: 2px 0;
+  }
+
+  .stack-list > div {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
