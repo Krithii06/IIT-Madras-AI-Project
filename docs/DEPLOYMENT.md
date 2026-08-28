@@ -1,5 +1,16 @@
 # Deployment
 
+> **What actually shipped:** everything on Vercel, in one project, at
+> <https://plant-disease-classification-rosy.vercel.app>. Static build plus Python
+> serverless functions in `frontend/api/`, same origin, no CORS. Nothing below is
+> needed for that — Vercel deploys it from a push to `main`. See the Deployment
+> section of the top-level README for the three non-obvious things about that build.
+>
+> This document describes the **original two-host design**, kept because the
+> Dockerfile and `render.yaml` are still in the repository and still work. It is the
+> route to take if the API needs a long-running container rather than a function —
+> for example to hold state, or to run a model too large for a 250 MB bundle.
+
 Two pieces go to two different hosts: the FastAPI inference service to Render, and
 the built React bundle to Vercel. Both have a free tier that does not require a card.
 

@@ -28,8 +28,8 @@
 % Deployed URLs. Paste them in here after deploying and recompile; the callout
 % under the title switches from "not yet live" to a highlighted link on its own.
 % ---------------------------------------------------------------------------
-\def\dashboardurl{}
-\def\apiurl{}
+\def\dashboardurl{https://plant-disease-classification-rosy.vercel.app}
+\def\apiurl{https://plant-disease-classification-rosy.vercel.app/health}
 
 % Shared node styles for the two diagrams.
 \tikzset{
@@ -472,11 +472,17 @@ the leaf is diseased.
 \textbf{Backend.} FastAPI served by uvicorn: a service description at the root, a
 liveness probe at \texttt{/health}, a model description at \texttt{/model-info}, and the
 classifier at \texttt{POST /predict}, taking a single multipart file field. Three
-decisions are worth recording. The model loads once at startup, because building the
-inference session costs far more than running it. The service depends on ONNX Runtime
-rather than PyTorch, keeping the image near 150\,MB instead of approaching a gigabyte ---
-decisive at 512\,MB of memory. Model-loading failures are recorded rather than raised, so
-a missing model yields a degraded health response instead of a restart loop.
+decisions are worth recording. The model loads once per process rather than per request,
+because building the inference session costs far more than running it. The service
+depends on ONNX Runtime rather than PyTorch, which keeps the dependency set near 100\,MB
+instead of approaching a gigabyte --- the difference between fitting a free tier and not,
+under either hosting plan. Model-loading failures are recorded rather than raised, so a
+missing model yields a degraded health response instead of a restart loop.
+
+The routes exist twice: as FastAPI handlers for local work and container hosting, and as
+Vercel functions for the deployment below, returning identical payloads and status
+codes. The preprocessing is not written twice --- it is copied from one source by a sync
+script, with a test hashing the copy against the original so they cannot drift apart.
 
 Uploads are validated on content type, emptiness, byte size against an 8\,MB limit and
 decodability, with a further guard on pixel count so a decompression bomb cannot turn
@@ -498,51 +504,64 @@ apple leaf will still return a confident-looking answer that means nothing.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}{0.54\textwidth}
+\begin{subfigure}{0.46\textwidth}
 \includegraphics[width=\textwidth]{screenshot_upload.png}
 \end{subfigure}\\[0.6em]
-\begin{subfigure}{0.54\textwidth}
-\includegraphics[width=\textwidth]{screenshot_result.png}
+\begin{subfigure}{0.58\textwidth}
+\includegraphics[width=\textwidth]{screenshot_live_result.png}
 \end{subfigure}
-\caption{The deployed interface: usage guide above the upload area, and the result panel
-reporting both class scores and measured inference time.}
+\caption{The interface as deployed. Above, the usage guide sitting over the upload area;
+below, the result panel captured from the live site classifying a black rot image, with
+both class scores and the measured inference time.}
 \end{figure}
 
 \section{Deployment}
 \label{sec:deployment}
 
-The system deploys as two pieces: the inference API as a Docker web service on Render's
-free tier, and the built front end as a static bundle on Vercel.
+The system runs entirely on Vercel's free tier: the React build as static files, the
+inference API as Python serverless functions beside it. That was not the original plan
+--- the project was built for a two-host split, Docker on Render for the API and Vercel
+for the front end, and both the Dockerfile and the Render blueprint remain in the
+repository and still work. The single-platform version won on every axis that matters
+here, so it is what ships.
+
+The deciding factor is that both halves answer on the same origin: the browser calls
+\texttt{/predict} on the page's own domain, so there is no cross-origin request and no
+CORS allow-list to get wrong. It also removes the free tier's worst property, a service
+that sleeps after fifteen minutes and takes a minute to answer the next request.
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=5mm and 9mm]
 
-\node[pipebox, minimum width=24mm] (browser) {browser\\\scriptsize any device};
+\node[pipebox, minimum width=22mm] (browser) {browser\\\scriptsize any device};
 
-\node[servebox, right=16mm of browser, minimum width=30mm] (vercel)
-  {\textbf{Vercel} (static, free)\\React build\\\scriptsize no server, never sleeps};
+\node[servebox, right=14mm of browser, minimum width=32mm] (static)
+  {static build\\\scriptsize React, served from the CDN};
 
-\node[trainbox, right=16mm of vercel, minimum width=34mm] (api)
-  {\textbf{Render} (Docker, free)\\FastAPI + uvicorn\\ONNX Runtime\\%
-   \scriptsize 512\,MB RAM, 0.1 CPU, 1 worker};
+\node[trainbox, right=14mm of static, minimum width=36mm] (fn)
+  {\texttt{api/predict.py}\\\scriptsize Python serverless function\\%
+   \scriptsize ONNX Runtime, no PyTorch};
 
-\node[pipebox, below=7mm of api, minimum width=34mm, fill=gray!10, draw=gray!60]
-  (bundle2) {\texttt{models/export/} baked into the image\\%
-             \scriptsize 9.1\,MB ONNX, loaded once at startup};
+\node[pipebox, below=8mm of fn, minimum width=36mm, fill=gray!10, draw=gray!60]
+  (bundle2) {\texttt{api/model/} bundled into the function\\%
+             \scriptsize 9.1\,MB ONNX, built once per warm instance};
 
-\draw[flow] (browser) -- node[above,font=\scriptsize,gray!80]{HTTPS} (vercel);
-\draw[flow] (vercel) -- node[above,font=\scriptsize,gray!80]{\texttt{POST /predict}}
-                        node[below,font=\scriptsize,gray!80]{CORS allow-list} (api);
-\draw[flow] (bundle2) -- (api);
+\draw[flow] (browser) -- node[above,font=\scriptsize,gray!80]{HTTPS} (static);
+\draw[flow] (static) -- node[above,font=\scriptsize,gray!80]{\texttt{/predict}}
+                        node[below,font=\scriptsize,gray!80]{same origin} (fn);
+\draw[flow] (bundle2) -- (fn);
 
-\node[font=\scriptsize, gray!75, below=2mm of vercel.south, align=center]
-  {build-time\\\texttt{VITE\_API\_URL}};
+\begin{scope}[on background layer]
+  \node[draw=accent!45, dashed, rounded corners=3pt, inner sep=5mm,
+        fit=(static)(fn)(bundle2), label={[font=\scriptsize\itshape, accent, anchor=north]
+        north:one Vercel deployment, one domain}] {};
+\end{scope}
 
 \end{tikzpicture}
-\caption{Deployment architecture. The two halves are hosted separately because their
-constraints differ: the front end is static and always available, while the API needs a
-container and is the piece that sleeps.}
+\caption{Deployment architecture as shipped. Both halves live in one Vercel project on
+one domain, so the prediction request never leaves the origin the page was served from
+and no CORS configuration exists to get wrong.}
 \label{fig:architecture}
 \end{figure}
 
@@ -552,25 +571,45 @@ Face documentation states that Gradio and Docker Spaces ``require a paid plan to
 create'', with only static Spaces remaining free --- and a static Space cannot run the
 model. That is exactly the kind of change that makes a free-tier assumption go stale.
 
-The chosen tier's constraints shaped the implementation rather than being discovered
-after it. The instance provides 512\,MB of memory and a fraction of a CPU core, which is
-why the API serves ONNX and runs a single worker --- each worker would load its own copy
-of the inference session. The exported model is a self-contained 9.1\,MB ONNX file whose
-logits match the PyTorch original to $2.4\times10^{-6}$, and single-image inference on
-one CPU thread measures \textbf{8.3\,ms}. The service sleeps after fifteen minutes idle
-with a cold start near a minute, so the front end requests model information on load ---
-which doubles as a wake-up call --- and allows a ninety-second timeout. Free instance
-hours are capped at 750 per month, roughly one continuously running service.
+Free-tier limits shaped the implementation rather than being discovered after it. The
+API serves ONNX rather than PyTorch, which is what lets the whole dependency set fit in
+about 100\,MB against the 250\,MB function limit --- torch alone would not have. The
+exported model is a self-contained 9.1\,MB file whose logits match the PyTorch original
+to $2.4\times10^{-6}$.
+
+\begin{table}[H]
+\centering\small
+\caption{What moving to a single platform bought, measured against the live deployment.}
+\begin{tabular}{lll}
+\toprule
+ & \textbf{Render (original plan)} & \textbf{Vercel (shipped)} \\
+\midrule
+Hosts required            & two              & one \\
+CORS configuration        & required         & none, same origin \\
+Idle behaviour            & sleeps at 15 min & no sleep \\
+First request after idle  & about 60\,s      & 1--2\,s \\
+Warm inference (measured) & not measured     & 8.8--22.8\,ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The trade is that a serverless function holds no persistent process, so the model is
+re-read whenever a new instance starts rather than staying resident. For a stateless
+classifier that costs a second on an occasional cold request and buys everything in the
+right-hand column; it would be the wrong trade for a service that had to hold state.
 
 \ifx\dashboardurl\empty
-\textbf{Hosted URLs.} The deployment artefacts are complete and committed --- a
-Dockerfile, a Render blueprint and step-by-step instructions --- but the hosted instance
-runs under the author's own accounts and was not live when this document was generated.
-No URL is quoted here rather than quote one that does not resolve.
+\textbf{Hosted URL.} Not live at the time this document was generated.
 \else
-\textbf{Hosted URLs.} The dashboard is live at \href{\dashboardurl}{\texttt{\dashboardurl}}
-and the API at \href{\apiurl}{\texttt{\apiurl}}. The first request after a quiet period
-takes about a minute while the container starts.
+\vspace{0.3em}
+\noindent\fcolorbox{accent}{accent!8}{%
+  \parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule}{\centering\vspace{1mm}
+  \textbf{\large\href{\dashboardurl}{\textcolor{accent}{View the live dashboard}}}\\[0.3em]
+  \texttt{\small\dashboardurl}\\[0.4em]
+  {\footnotesize Health check: \href{\apiurl}{\texttt{/health}} \quad$\cdot$\quad
+   Source: \href{https://github.com/Krithii06/IIT-Madras-AI-Project}%
+   {\texttt{github.com/Krithii06/IIT-Madras-AI-Project}}}\vspace{1mm}}}
+\vspace{0.3em}
 \fi
 
 \section{Challenges and how they were handled}
@@ -590,6 +629,15 @@ data loader, was the bottleneck --- roughly 127\,s per epoch against 13 --- so t
 was 160-pixel inputs and two loader workers rather than four, leaving the physical cores
 to the backward pass instead of competing with it.
 \item \textbf{The deployment target disappeared mid-project}, as described above.
+\item \textbf{Four failed builds on one misread error.} Vercel resolves Python
+dependencies from the repository root, not the configured root directory, and the root
+requirements file happened to list \texttt{onnxruntime} too --- so the failure pointed
+at a file that was never being read. It also picks its own interpreter, CPython 3.14,
+ignoring a pinned version in both locations. Three attempts went into forcing the
+interpreter down before the better move became clear: \texttt{onnxruntime} has shipped
+cp314 wheels since 1.24.3, so moving the pin forward removed the conflict rather than
+arguing with the platform. The same root file still carried the entire training stack,
+which would have exceeded the function size limit even once the interpreter was right.
 \item \textbf{A silently split model export.} PyTorch wrote the ONNX weights to a
 sidecar file once they passed its size threshold. It loaded correctly in place and would
 have failed only after someone copied the graph without it, so the export step now folds

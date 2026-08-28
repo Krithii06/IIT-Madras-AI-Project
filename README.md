@@ -1,7 +1,9 @@
 # Plant Disease Classification
 
-A binary healthy/diseased classifier for apple leaf images, served through a FastAPI
-endpoint and a small React front end. Built as an internship technical assessment.
+**Live app: <https://plant-disease-classification-rosy.vercel.app>**
+
+A binary healthy/diseased classifier for apple leaf images, served through a Python
+API and a small React front end. Built as an internship technical assessment.
 
 The interesting part of this project is not the accuracy number. PlantVillage
 photographs each physical leaf several times, and in the subset used here **3,171
@@ -396,9 +398,40 @@ documents the shape.
 
 ## Deployment
 
-Backend as a Docker web service on Render's free tier, front end as a static build
-on Vercel. Full step-by-step instructions, including the CORS crossing-over step,
-are in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
+**Live: <https://plant-disease-classification-rosy.vercel.app>**
+
+Everything runs in one Vercel project on the free tier — the React build as static
+files, and the inference API as Python serverless functions in `frontend/api/`. Both
+answer on the same origin, so `/predict` is a same-origin call and **there is no CORS
+configuration at all**.
+
+| | |
+|---|---|
+| Live app | <https://plant-disease-classification-rosy.vercel.app> |
+| Health | `/health` → `{"status":"ok","model_loaded":true}` |
+| Warm inference (measured) | 8.8–22.8 ms |
+| Sleeps when idle | no |
+
+The original design was a two-host split — Docker on Render for the API, Vercel for
+the front end. `backend/Dockerfile` and `render.yaml` are still here and still work;
+[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) documents that route. Single-platform won on
+every axis, so it is what ships.
+
+Three things about the Vercel build that cost four failed attempts, recorded because
+none of them are obvious:
+
+- It resolves Python dependencies from the **repository root**, not the configured
+  root directory. `frontend/requirements.txt` was never read.
+- It selects its own interpreter (CPython 3.14) and ignores `.python-version` in both
+  locations. `onnxruntime` must therefore be at **1.24.3 or newer**, the first release
+  with cp314 wheels — a test enforces this.
+- The root `requirements.txt` must stay runtime-only. `torch` would push the function
+  past the 250 MB limit; the development stack lives in `requirements-dev.txt`.
+
+`frontend/api/` contains copies of the predictor and the model bundle, because Vercel
+builds with `frontend/` as its root and cannot reach `src/` or `models/` above it.
+`python -m src.inference.sync_vercel` refreshes them and `tests/test_vercel_bundle.py`
+hashes them against their sources, so the copies cannot silently go stale.
 
 Hugging Face Spaces was the original target and the Dockerfile still works there,
 but as of 2026 the Hub documentation states that Gradio and Docker Spaces "require

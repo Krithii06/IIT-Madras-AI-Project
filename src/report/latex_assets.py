@@ -31,7 +31,7 @@ WANTED = {
     "leaf_groups.png": (1400, "jpg"),
     "mobilenet_leaf_test_errors.png": (1400, "jpg"),
     "screenshot_upload.png": (1500, "png"),
-    "screenshot_result.png": (None, "png"),
+    "screenshot_live_result.png": (None, "png"),
 }
 
 
